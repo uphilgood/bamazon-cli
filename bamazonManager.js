@@ -2,6 +2,9 @@ var mysql = require("mysql");
 var inquirer = require("inquirer")
 var Table = require('cli-table');
 var path
+var list
+var productId
+var numOfProducts
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -61,10 +64,10 @@ function view() {
             return viewAllProducts();
 
         case "View Low Inventory":
-            return console.log("view low inventory!");
+            return lowInventory();
 
         case "Add to Inventory":
-            return console.log("Add to Inventory")
+            return add()
 
         case "Add New Product":
             return console.log("Add New Product")
@@ -78,13 +81,67 @@ function viewAllProducts() {
     connection.query('SELECT * from products', function (error, results, fields) {
         if (error) throw error;
         results.forEach(data => {
-
             table.push([data.item_id, data.product_name, data.price, data.stock_quantity])
 
         })
         console.log(table.toString())
     });
+}
+
+function lowInventory() {
+    connection.query('SELECT * from products where stock_quantity < 5', function (error, results, fields) {
+        if (error) throw error;
+        results.forEach(data => {
+           list = data
+            table.push([data.item_id, data.product_name, data.price, data.stock_quantity])
+            
+        })
+        if (!list) {
+            console.log("There are no items whose stock is less than 5!")
+        } else {
+        console.log(table.toString())
+        }
+    });
     connection.end();
+}
+
+function add() {
+    viewAllProducts()
+    inquirer.prompt([{
+                name: "id",
+                message: " What is the ID of the product you would like to add?" + '\n'
+            },
+            {
+                name: "numberOfProducts",
+                message: " How many would you like to add?" + '\n'
+            }
+        ])
+        .then(data => {
+            productId = data.id
+            numOfProducts = data.numberOfProducts
+            console.log("You want product ID: " + productId + '\n' +
+                "You want to add " + numOfProducts + " items")
+                getQuantity(productId)
+        });
+}
+
+function getQuantity(productId) {
+    connection.query('select stock_quantity from products where item_id = ?', [productId], function (error, results, fields) {
+        if (error) throw error;
+        results.forEach(data => {
+            numOfProductsToUpdate = parseInt(data.stock_quantity) + parseInt(numOfProducts)
+        })
+            console.log("There is a total of " + numOfProductsToUpdate + " now for that item!")
+            addInventory()   
+    });
+}
+
+function addInventory() {
+    connection.query('update products set stock_quantity = ? where item_id = ?', [numOfProductsToUpdate, productId], function (error, results, fields) {
+        if (error) throw error;
+    })
+    viewAllProducts()
+    connection.end()
 }
 
 connectDb()

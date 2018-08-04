@@ -1,10 +1,13 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer")
-var Table = require('cli-table');
+var Table = require('cli-table2');
 var path
 var list
 var productId
 var numOfProducts
+var nameOfProduct
+var priceOfProduct
+var department
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -16,21 +19,10 @@ var connection = mysql.createConnection({
 var table = new Table({
     head: ['ID', 'Product Name', 'Price', "Quantity"],
     chars: {
-        'top': '═',
-        'top-mid': '╤',
-        'top-left': '╔',
-        'top-right': '╗',
-        'bottom': '═',
-        'bottom-mid': '╧',
-        'bottom-left': '╚',
-        'bottom-right': '╝',
-        'left': '║',
-        'left-mid': '╟',
-        'mid': '─',
-        'mid-mid': '┼',
-        'right': '║',
-        'right-mid': '╢',
-        'middle': '│'
+        'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
+        , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
+        , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
+        , 'right': '║' , 'right-mid': '╢' , 'middle': '│'
     }
 });
 
@@ -70,7 +62,7 @@ function view() {
             return add()
 
         case "Add New Product":
-            return console.log("Add New Product")
+            return addNewProduct()
 
         default:
             return console.log("default!");
@@ -123,6 +115,7 @@ function add() {
                 "You want to add " + numOfProducts + " items")
                 getQuantity(productId)
         });
+        
 }
 
 function getQuantity(productId) {
@@ -139,9 +132,48 @@ function getQuantity(productId) {
 function addInventory() {
     connection.query('update products set stock_quantity = ? where item_id = ?', [numOfProductsToUpdate, productId], function (error, results, fields) {
         if (error) throw error;
+        // viewAllProducts()
     })
-    viewAllProducts()
+
     connection.end()
+}
+
+function addNewProduct() {
+    viewAllProducts()
+    inquirer.prompt([{
+                name: "name",
+                message: " What Product do you want to add?" + '\n'
+            },
+            {
+                name: "price",
+                message: " How much is this Product?" + '\n'
+            },
+            {
+                name: "department",
+                message: " What department is this item in?" + '\n'
+            },
+            {
+                name: "numberOfProducts",
+                message: " How many would you like to add?" + '\n'
+            }
+        ])
+        .then(data => {
+            nameOfProduct = data.name
+            priceOfProduct= data.price
+            department = data.department
+            numOfProducts = data.numberOfProducts
+            console.log("You want product ID: " + productId + '\n' +
+                "You want to add " + numOfProducts + " items")
+                newProduct(nameOfProduct, priceOfProduct, department, numOfProducts)
+        });
+        
+}
+
+function newProduct(nameOfProduct, priceOfProduct, department, numOfProducts) {
+    connection.query('INSERT INTO products (product_name, price, department_name, stock_quantity) VALUE (?, ?, ?, ?) ', [nameOfProduct, priceOfProduct, department, numOfProducts], function (error, results, fields) {
+        if (error) throw error;
+        viewAllProducts()
+    })
 }
 
 connectDb()

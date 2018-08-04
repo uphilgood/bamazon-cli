@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer")
-var Table = require('cli-table');
+var Table = require('cli-table2');
 var productId
 var numOfProducts
 var connection = mysql.createConnection({
@@ -15,21 +15,10 @@ var connection = mysql.createConnection({
 var table = new Table({
     head: ['ID', 'Product Name', 'Price'],
     chars: {
-        'top': '═',
-        'top-mid': '╤',
-        'top-left': '╔',
-        'top-right': '╗',
-        'bottom': '═',
-        'bottom-mid': '╧',
-        'bottom-left': '╚',
-        'bottom-right': '╝',
-        'left': '║',
-        'left-mid': '╟',
-        'mid': '─',
-        'mid-mid': '┼',
-        'right': '║',
-        'right-mid': '╢',
-        'middle': '│'
+        'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
+        , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
+        , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
+        , 'right': '║' , 'right-mid': '╢' , 'middle': '│'
     }
 });
 

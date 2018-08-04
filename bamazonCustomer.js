@@ -84,6 +84,14 @@ function updateQuery() {
     connection.query('update products set stock_quantity = ? where item_id = ?', [updateAmount, productId], function (error, results, fields) {
         if (error) throw error;
         console.log("There are " + updateAmount + " " + purchasedItem + " items left!")
+        updateSales()
+    })
+}
+
+function updateSales() {
+    connection.query('update products set product_sales = ? where item_id = ?', [(itemPrice*numOfProducts), productId], function (error, results, fields) {
+        if (error) throw error;
+        console.log("Total Sales for " + purchasedItem + " are $" +itemPrice*numOfProducts + "!")
     })
     connection.end();
 }

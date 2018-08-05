@@ -115,7 +115,6 @@ function add() {
                 "You want to add " + numOfProducts + " items")
                 getQuantity(productId)
         });
-        
 }
 
 function getQuantity(productId) {
@@ -132,14 +131,11 @@ function getQuantity(productId) {
 function addInventory() {
     connection.query('update products set stock_quantity = ? where item_id = ?', [numOfProductsToUpdate, productId], function (error, results, fields) {
         if (error) throw error;
-        // viewAllProducts()
     })
-
-    connection.end()
+    connection.end();
 }
 
 function addNewProduct() {
-    viewAllProducts()
     inquirer.prompt([{
                 name: "name",
                 message: " What Product do you want to add?" + '\n'
@@ -162,8 +158,7 @@ function addNewProduct() {
             priceOfProduct= data.price
             department = data.department
             numOfProducts = data.numberOfProducts
-            console.log("You want product ID: " + productId + '\n' +
-                "You want to add " + numOfProducts + " items")
+            console.log("Thank you for adding " + numOfProducts + " " + nameOfProduct + "s")
                 newProduct(nameOfProduct, priceOfProduct, department, numOfProducts)
         });
         
@@ -172,8 +167,8 @@ function addNewProduct() {
 function newProduct(nameOfProduct, priceOfProduct, department, numOfProducts) {
     connection.query('INSERT INTO products (product_name, price, department_name, stock_quantity) VALUE (?, ?, ?, ?) ', [nameOfProduct, priceOfProduct, department, numOfProducts], function (error, results, fields) {
         if (error) throw error;
-        viewAllProducts()
     })
+    viewAllProducts()
 }
 
 connectDb()

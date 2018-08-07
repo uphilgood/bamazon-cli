@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 });
 
 var table = new Table({
-    head: ['Department ID', 'Department Name', 'Over Head Cost', 'Product Sales', 'Total Profit'],
+    head: ['Department ID', 'Department Name', 'Over Head Costs', 'Product Sales','Total Profit', ],
     chars: {
         'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
         , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
@@ -56,10 +56,10 @@ function view() {
 }
 
 function viewProductSales() {
-    connection.query('select d.department_id, d.department_name, d.over_head_costs, p.product_sales, (product_sales - over_head_costs) as total_profit  from departments d join products p on p.department_name = d.department_name group by d.department_id, d.department_name, d.over_head_costs, p.product_sales order by d.department_id', function (error, results, fields) {
+    connection.query('select d.Department_ID, d.Department_Name, d.over_head_costs, p.total_sales, (d.over_head_costs - p.total_sales) as Total_Revenue from departments d join (select department_name, sum(product_sales) as total_sales from products group by department_name) p on p.department_name = d.department_name', function (error, results, fields) {
         if (error) throw error;
         results.forEach(data => {
-            table.push([data.department_id, data.department_name, data.over_head_costs, data.product_sales, data.total_profit])
+            table.push([data.Department_ID, data.Department_Name, data.over_head_costs, data.total_sales, data.Total_Revenue])
 
         })
         console.log(table.toString())
